@@ -1,0 +1,372 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+#include "jpeg.hpp"
+#include "Unit1.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1* Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner) {}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject* Sender)
+{
+    OpenDialog1->Filter = "Bmp files(*.bmp)|*.BMP|JPEGimages\(*.jpg)|*.jpg;";
+	Image1->Proportional = true;
+	Image2->Proportional = true;
+	if (OpenDialog1->Execute()) {
+		if (!FileExists(OpenDialog1->FileName))
+			return;
+		AnsiString temp = ExtractFileExt(OpenDialog1->FileName);
+		AnsiString Ext = temp.LowerCase();
+		if (Ext.AnsiPos("jpg") > 0) // este un fisier jpg
+		{
+			TJPEGImage* myjpeg = new TJPEGImage();
+			myjpeg->LoadFromFile(OpenDialog1->FileName);
+			myjpeg->DIBNeeded();
+            Image1->Picture->Bitmap->Assign(myjpeg);
+			delete myjpeg;
+		} else if (Ext.AnsiPos("bmp") > 0)
+		{
+			Image1->Picture->Bitmap->LoadFromFile(OpenDialog1->FileName);
+		}
+
+	}
+
+	Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Height;
+	dest->Width = source->Width;
+	dest->PixelFormat = source->PixelFormat;
+
+	RGBTRIPLE* pixels;
+	int histoSR[256] = {0};
+	int histoSG[256] = {0};
+	int histoSB[256] = {0};
+
+	for (int x = 0; x < source->Height; x++) {
+		 RGBTRIPLE* linie = (RGBTRIPLE*)source->ScanLine[x];
+		 for (int y = 0; y < source->Width; y++) {
+			   histoSR[linie[y].rgbtRed]++;
+			   histoSG[linie[y].rgbtGreen]++;
+			   histoSB[linie[y].rgbtBlue]++;
+		 }
+	}
+
+	Chart1->Series[0]->Clear();
+	Chart1->Series[1]->Clear();
+	Chart1->Series[2]->Clear();
+
+
+	for (int i = 0; i < 256; i++) {
+		Chart1->Series[0]->AddXY(i, histoSR[i], "", clRed);
+		Chart1->Series[1]->AddXY(i, histoSG[i], "", clGreen);
+		Chart1->Series[2]->AddXY(i, histoSB[i], "", clBlue);
+	}
+
+	Chart1->Series[0]->Active = true;
+	Chart1->Series[1]->Active = true;
+	Chart1->Series[2]->Active = true;
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button2Click(TObject* Sender)
+{
+    AnsiString Ext;
+    SaveDialog1->Filter =
+        "Bmp files (*.bmp)|*.BMP| JPEG images (*.jpg;*.jpeg)|*.jpg;*";
+    SaveDialog1->Title = "Save Image";
+    SaveDialog1->DefaultExt = "jpg";
+    SaveDialog1->FilterIndex = 1;
+    if (SaveDialog1->Execute()) {
+        AnsiString temp = ExtractFileExt(SaveDialog1->FileName);
+        Ext = temp.LowerCase();
+    }
+    if (Ext.AnsiPos("jpg") > 0) {
+        TJPEGImage* jp = new TJPEGImage();
+        try {
+            jp->Assign(Image2->Picture->Bitmap);
+            jp->SaveToFile(SaveDialog1->FileName);
+        } __finally
+        {
+            delete jp;
+        }
+    } else if (Ext.AnsiPos("bmp") > 0)
+        Image2->Picture->Bitmap->SaveToFile(SaveDialog1->FileName);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Image1MouseDown(
+    TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+	if (Image1->Picture->Graphic->Empty == true)
+        return;
+    Graphics::TBitmap* source = new Graphics::TBitmap;
+    source->Assign(Image1->Picture->Bitmap);
+    source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+    RGBTRIPLE* pixels;
+	pixels = (RGBTRIPLE*)
+				 source->ScanLine[Y * (float)source->Height / Image1->Height];
+
+	Chart2->Series[0]->Clear();
+	Chart2->Series[1]->Clear();
+	Chart2->Series[2]->Clear();
+
+	for (int i = 0; i < source->Width; i++) {
+		Chart2->Series[0]->AddXY(i, pixels[i].rgbtRed, "", clRed);
+		Chart2->Series[1]->AddXY(i, pixels[i].rgbtGreen, "", clGreen);
+		Chart2->Series[2]->AddXY(i, pixels[i].rgbtBlue, "", clBlue);
+	}
+
+	Chart2->Series[0]->Active = true;
+	Chart2->Series[1]->Active = true;
+	Chart2->Series[2]->Active = true;
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button3Click(TObject* Sender)
+{
+/// de completat red and green
+	Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Height;
+	dest->Width = source->Width;
+	dest->PixelFormat = source->PixelFormat;
+
+    int histoSR[256] = {0};
+	int histoSG[256] = {0};
+	int histoSB[256] = {0};
+
+	for (int x = 0; x < source->Height; x++) {
+		RGBTRIPLE* linieS = (RGBTRIPLE*)source->ScanLine[x];
+		RGBTRIPLE* linieD = (RGBTRIPLE*)dest->ScanLine[x];
+		for (int y = 0; y < source->Width; y++) {
+			linieD[y].rgbtRed = linieS[y].rgbtRed;
+			linieD[y].rgbtGreen = linieS[y].rgbtGreen;
+			linieD[y].rgbtRed = 0;
+
+			histoSR[linieS[y].rgbtRed]++;
+			histoSG[linieS[y].rgbtGreen]++;
+		}
+	}
+
+	Chart2->Series[0]->Clear();
+	Chart2->Series[1]->Clear();
+
+	for (int i = 0; i < 256; i++) {
+		Chart2->Series[0]->AddXY(i, histoSR[i], "", clRed);
+		Chart2->Series[1]->AddXY(i, histoSG[i], "", clGreen);
+	}
+
+	Chart2->Series[0]->Active = true;
+	Chart2->Series[1]->Active = true;
+
+	Image2->Picture->Bitmap->Assign(dest);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button4Click(TObject* Sender)
+{
+	/// de completat CW rotation + binarizare
+    Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Width;
+	dest->Width = source->Height;
+	dest->PixelFormat = source->PixelFormat;
+
+	Graphics::TBitmap* dest2 = new Graphics::TBitmap;
+	dest2->Height = source->Height;
+	dest2->Width = source->Width;
+	dest2->PixelFormat = source->PixelFormat;
+
+	for (int x = 0; x < source->Width; x++) {
+		for (int y = 0; y < source->Height; y++) {
+			dest->Canvas->Pixels[y][source->Width - x - 1] = source->Canvas->Pixels[x][y];
+		}
+	}
+
+	int editX = Edit1->Text.ToInt();
+	double avg;
+
+	for (int x = 0; x < dest->Width; x++) {
+		RGBTRIPLE* linieS = (RGBTRIPLE*)dest->ScanLine[x];
+		RGBTRIPLE* linieD = (RGBTRIPLE*)dest2->ScanLine[x];
+		for (int y = 0; y < dest->Height; y++) {
+			avg = (linieS[y].rgbtRed + linieS[y].rgbtGreen + linieS[y].rgbtBlue) / 3;
+
+			if (avg < ((editX * 255) / 100)) {
+				linieD[y].rgbtRed = 0;
+				linieD[y].rgbtGreen = 0;
+				linieD[y].rgbtBlue = 0;
+			} else {
+				linieD[y].rgbtRed = 255;
+				linieD[y].rgbtGreen = 255;
+				linieD[y].rgbtBlue = 255;
+            }
+		}
+	}
+
+	Image2->Picture->Bitmap->Assign(dest2);
+	delete dest2;
+	delete dest;
+	delete source;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button5Click(TObject* Sender)
+{
+	/// de completat curba exponentiala
+
+    Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Height;
+	dest->Width = source->Width;
+	dest->PixelFormat = source->PixelFormat;
+
+	int histoGrey[256] = {0};
+	int LUT[256] = {0};
+
+	for (int i = 0; i < 256; i++) {
+		LUT[i] = ((log10(1 + i) / log10(256)) * 255);
+	}
+
+	for (int x = 0; x < source->Height; x++) {
+		RGBTRIPLE* linieS = (RGBTRIPLE*)source->ScanLine[x];
+		RGBTRIPLE* linieD = (RGBTRIPLE*)dest->ScanLine[x];
+		for (int y = 0; y < source->Width; y++) {
+			Byte gri = (byte)(linieS[y].rgbtRed * 0.33 + linieS[y].rgbtGreen * 0.59 + linieS[y].rgbtBlue * 0.11);
+
+			Byte valFin = (byte)LUT[gri];
+			linieD[y].rgbtRed = gri;
+			linieD[y].rgbtGreen = gri;
+			linieD[y].rgbtBlue = gri;
+
+			histoGrey[gri]++;
+		}
+	}
+
+	Chart2->Series[0]->Clear();
+
+	for (int i = 0; i < 256; i++) {
+		Chart2->Series[0]->AddXY(i, histoGrey[i], "", clGray);
+	}
+
+	Chart2->Series[0]->Active = true;
+
+	Image2->Picture->Bitmap->Assign(dest);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button6Click(TObject *Sender)
+{
+    Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Height;
+	dest->Width = source->Width;
+	dest->PixelFormat = source->PixelFormat;
+
+	int histoGrey[256] = {0};
+
+	for (int x = 0; x < source->Height; x++) {
+		RGBTRIPLE* linieS = (RGBTRIPLE*)source->ScanLine[x];
+		RGBTRIPLE* linieD = (RGBTRIPLE*)dest->ScanLine[x];
+		for (int y = 0; y < source->Width; y++) {
+			Byte gri = (byte)(linieS[y].rgbtRed * 0.3 + linieS[y].rgbtGreen * 0.59 + linieS[y].rgbtBlue * 0.11);
+
+			linieD[y].rgbtRed = gri;
+			linieD[y].rgbtGreen = gri;
+			linieD[y].rgbtBlue = gri;
+
+			histoGrey[gri]++;
+		}
+	}
+
+	Chart2->Series[0]->Clear();
+
+	for (int i = 0; i < 256; i++) {
+		Chart2->Series[0]->AddXY(i, histoGrey[i], "", clGray);
+	}
+
+	Chart2->Series[0]->Active = true;
+
+    Image2->Picture->Bitmap->Assign(dest);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button7Click(TObject *Sender)
+{
+    Graphics::TBitmap* source = new Graphics::TBitmap;
+	source->Assign(Image1->Picture->Bitmap);
+	source->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+	/*
+	Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Width;
+	dest->Width = source->Height;
+	dest->PixelFormat = source->PixelFormat;
+	*/
+
+    Graphics::TBitmap* dest = new Graphics::TBitmap;
+	dest->Height = source->Height;
+	dest->Width = source->Width;
+	dest->PixelFormat = source->PixelFormat;
+
+	Graphics::TBitmap* dest2 = new Graphics::TBitmap;
+	dest2->Height = dest->Height;
+	dest2->Width = dest->Width;
+	dest2->PixelFormat = dest->PixelFormat;
+
+	/*
+	// OGLINDIRE PE Y
+	for (int x = 0; x < source->Height; x++) {
+		for (int y = 0; y < source->Width; y++) {
+			dest->Canvas->Pixels[x][source->Height - 1 - y] =
+				source->Canvas->Pixels[x][y];
+		}
+	}
+
+
+	for (int x = 0; x < source->Height; x++) {
+		for (int y = 0; y < source->Width; y++) {
+			dest->Canvas->Pixels[source->Height - 1 - x][y] =
+				source->Canvas->Pixels[x][y];
+		}
+	}
+    */
+
+    for (int x = 0; x < source->Height; x++) {
+		for (int y = 0; y < source->Width; y++) {
+        dest->Canvas->Pixels[y][source->Height - 1 - x] =
+			source->Canvas->Pixels[y][x];
+    }
+}
+
+
+
+
+	Image2->Picture->Bitmap->Assign(dest);
+}
+//---------------------------------------------------------------------------
+

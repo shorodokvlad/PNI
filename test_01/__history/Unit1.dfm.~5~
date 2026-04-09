@@ -1,0 +1,229 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Subiect PNI'
+  ClientHeight = 579
+  ClientWidth = 1023
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  TextHeight = 15
+  object Image1: TImage
+    Left = 184
+    Top = 8
+    Width = 400
+    Height = 300
+    OnMouseDown = Image1MouseDown
+  end
+  object Image2: TImage
+    Left = 608
+    Top = 8
+    Width = 400
+    Height = 300
+  end
+  object Label1: TLabel
+    Left = 29
+    Top = 434
+    Width = 61
+    Height = 15
+    Caption = 'binarizare%'
+  end
+  object Label2: TLabel
+    Left = 76
+    Top = 527
+    Width = 14
+    Height = 15
+    Caption = 'k='
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 24
+    Width = 170
+    Height = 49
+    Caption = 'Load'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 8
+    Top = 79
+    Width = 170
+    Height = 49
+    Caption = 'Save'
+    TabOrder = 1
+    OnClick = Button2Click
+  end
+  object Chart1: TChart
+    Left = 184
+    Top = 314
+    Width = 400
+    Height = 250
+    Legend.Visible = False
+    Title.Text.Strings = (
+      'Histograma Sursa')
+    View3D = False
+    TabOrder = 2
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object Series1: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Red'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series2: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Green'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series3: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Blue'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+  end
+  object Chart2: TChart
+    Left = 608
+    Top = 314
+    Width = 400
+    Height = 250
+    Legend.Visible = False
+    Title.Text.Strings = (
+      'Histograma destinatie')
+    View3D = False
+    TabOrder = 3
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object Series4: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Red'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series5: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Green'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series6: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Blue'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+  end
+  object Button3: TButton
+    Left = 8
+    Top = 144
+    Width = 170
+    Height = 49
+    Caption = 'Red && Green'
+    TabOrder = 4
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 8
+    Top = 379
+    Width = 170
+    Height = 46
+    Caption = 'CW Rotation'
+    TabOrder = 5
+    OnClick = Button4Click
+  end
+  object Button5: TButton
+    Left = 8
+    Top = 469
+    Width = 170
+    Height = 49
+    Caption = 'Curba Exp'
+    TabOrder = 6
+    OnClick = Button5Click
+  end
+  object Edit1: TEdit
+    Left = 96
+    Top = 431
+    Width = 82
+    Height = 23
+    TabOrder = 7
+    Text = '50'
+  end
+  object Edit2: TEdit
+    Left = 96
+    Top = 524
+    Width = 82
+    Height = 23
+    TabOrder = 8
+    Text = '300'
+  end
+  object Button6: TButton
+    Left = 8
+    Top = 199
+    Width = 170
+    Height = 50
+    Caption = 'Gri'
+    TabOrder = 9
+    OnClick = Button6Click
+  end
+  object Button7: TButton
+    Left = 8
+    Top = 255
+    Width = 170
+    Height = 50
+    Caption = 'Oglindire pe Y'
+    TabOrder = 10
+    OnClick = Button7Click
+  end
+  object Button8: TButton
+    Left = 8
+    Top = 311
+    Width = 170
+    Height = 50
+    Caption = 'Translatare'
+    TabOrder = 11
+    OnClick = Button8Click
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 120
+    Top = 65520
+  end
+  object SaveDialog1: TSaveDialog
+    Left = 24
+    Top = 65529
+  end
+end
