@@ -10,8 +10,6 @@
 #pragma resource "*.dfm"
 TForm1* Form1;
 
-TPoint pt[100];
-int cnt = 0;
 
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner) {}
@@ -79,7 +77,7 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
 void __fastcall TForm1::Image1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y)
 {
-    
+
 }
 //---------------------------------------------------------------------------
 

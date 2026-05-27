@@ -21,9 +21,7 @@ void __fastcall TForm1::Button1Click(TObject* Sender)
     Image1->Proportional = true;
     Image2->Proportional = true;
 
-    /// de completat
 
-    //** de completat histograma *//
     long Hr[256], Hg[256], Hb[256];
     memset(Hr, 0, sizeof(Hr));
     memset(Hg, 0, sizeof(Hg));
@@ -78,6 +76,8 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
 
     src->Assign(Image1->Picture->Bitmap);
     src->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
+
+    // NIVELE GRI 
     if (CheckBox5->Checked) {
         double avg = 0;
         for (int y = 0; y < src->Height; y++) {
@@ -102,6 +102,7 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
     dst->Height = src->Height;
     dst->PixelFormat = src->PixelFormat;
 
+    // SELECTIA 
     if (CheckBox3->Checked) {
         int sx1 = pt[cnt - 2].x, sy1 = pt[cnt - 2].y;
         int sx2 = pt[cnt - 1].X, sy2 = pt[cnt - 1].y;
@@ -128,6 +129,7 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
             TRect(0, 0, w, h), src->Canvas, TRect(sx1, sy1, sx1 + w, sy1 + h));
         Image2->Picture->Bitmap = bmp;
 
+        // FILTRARE
     } else if (CheckBox1->Checked) {
         double w[3][3] = { { 1.0 / 9, 1.0 / 9, 1.0 / 9 },
             { 1.0 / 9, 1.0 / 9, 1.0 / 9 }, { 1.0 / 9, 1.0 / 9, 1.0 / 9 }
@@ -160,10 +162,9 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
             }
         }
     }
+    // DETECTAREA MUCHIILOR
     if (CheckBox2->Checked) {
         int w[3][3] = { { 1, 1, 1 }, { 0, 0, 0 }, { -1, -1, -1 } };
-
-        // Declararea matricei Py
         int w1[3][3] = { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } };
         for (int y = 0; y < dst->Height; y++) {
             RGBTRIPLE* pixels = (RGBTRIPLE*)dst->ScanLine[y];
@@ -206,6 +207,8 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
                 Image2->Picture->Bitmap->Assign(dst);
             }
         }
+
+        // BINARIZARE
     } else if (CheckBox4->Checked) {
         double avg = 0;
         for (int y = 0; y < src->Height; y++) {
@@ -221,35 +224,31 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
             }
         }
 		Image2->Picture->Bitmap->Assign(dst);
+
+        // MOZAIC
     } else if (CheckBox6->Checked) {
-        int blockDim = 60, np = 0;
-        int noBlockX = dst->Width / blockDim;
-        int noBlockY = dst->Height / blockDim;
-        TPoint points[10000];
-        for (int i = 0; i < noBlockX; i++) {
-            for (int j = 0; j < noBlockY; j++) {
-                points[np].x = i * blockDim + rand() % blockDim;
-                points[np].Y = j * blockDim + rand() % blockDim;
-                np++;
-            }
-        }
-        for (int i = 0; i < dst->Width; i++) {
-            for (int j = 0; j < dst->Height; j++) {
-                int distMin = INT_MAX;
-                int NPct = -1;
-                for (int k = 0; k < np; k++) {
-                    int dist = (i - points[k].x) * (i - points[k].x) +
-                               (j - points[k].y) * (j - points[k].y);
-                    if (dist < distMin) {
-                        distMin = dist;
-                        NPct = k;
-                    }
-                }
-                dst->Canvas->Pixels[i][j] =
-                    src->Canvas->Pixels[points[NPct].x][points[NPct].y];
-            }
-        }
-        Image2->Picture->Bitmap->Assign(dst);
+        int mozaicSize=8;
+		for(int y=0;y<src->Height;y++)
+		{
+			for(int x=0;x<src->Width;x++)
+			{
+				int newX=mozaicSize-x%mozaicSize;
+				int newY=mozaicSize-y%mozaicSize;
+
+				if(x+newX>0 && x+newX<src->Width && y+newY>0 && y+newY<src->Height)
+				{
+					TColor color=src->Canvas->Pixels[x+newX][y+newY];
+					int r=GetRValue(color);
+					int g=GetGValue(color);
+					int b=GetBValue(color);
+
+					dst->Canvas->Pixels[x][y]=TColor(RGB(r,g,b));
+				}  else{
+					dst->Canvas->Pixels[x][y]=clWhite;
+				}
+			}
+		}
+		Image2->Picture->Bitmap->Assign(dst);
     }
 }
 //---------------------------------------------------------------------------

@@ -10,6 +10,10 @@
 #pragma resource "*.dfm"
 TForm1* Form1;
 
+// globale
+TPoint pt[100];
+int cnt = 0;
+
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner) : TForm(Owner) {}
 //---------------------------------------------------------------------------
@@ -89,6 +93,7 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
     dest->PixelFormat = source->PixelFormat;
     // de completat
 
+    // FILTRARE
     if (CheckBox1->Checked) {
         double w[3][3] = { { 1.0 / 10, 1.0 / 10, 1.0 / 10 },
             { 1.0 / 10, 1.0 / 10, 1.0 / 10 },
@@ -122,6 +127,7 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
         Image2->Picture->Bitmap->Assign(dest);
     }
 
+    // DETECTIA MUCHIILOR
     if (CheckBox2->Checked) {
         double w[3][3] = { { 0, 0, 0 }, { 1, -1, 0 }, { 0, 0, 0 } };
         double w1[3][3] = { { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 0 } };
@@ -166,48 +172,42 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
         Image2->Picture->Bitmap->Assign(dest);
     }
 
-	/*
-	// SELECTIA
 
-    // globale
-    TPoint pt[100];
-    int cnt = 0;
+        // SELECTIA
+        if (CheckBox3->Checked)
+    {
+        int sx1 = pt[cnt - 2].x, sy1 = pt[cnt - 2].y;
+        int sx2 = pt[cnt - 1].x, sy2 = pt[cnt - 1].y;
+        if (sx1 > sx2)
+            std::swap(sx1, sx2);
+        if (sy1 > sy2)
+            std::swap(sy1, sy2);
 
-    // on mouse down
-    pt[cnt].X = X;
-	pt[cnt].Y = Y;
-    cnt++;
+        Graphics::TBitmap* src = Image1->Picture->Bitmap;
+        int w = std::max(0, std::min(sx2, src->Width) - std::max(0, sx1));
+        int h = std::max(0, std::min(sy2, src->Height) - std::max(0, sy1));
+        if (w == 0 || h == 0)
+            return;
 
-    // functie
-    int sx1 = pt[cnt - 2].x, sy1 = pt[cnt - 2].y;
-    int sx2 = pt[cnt - 1].x, sy2 = pt[cnt - 1].y;
-    if (sx1 > sx2)
-        std::swap(sx1, sx2);
-    if (sy1 > sy2)
-        std::swap(sy1, sy2);
+        Graphics::TBitmap* bmp = new Graphics::TBitmap();
+        bmp->PixelFormat = src->PixelFormat;
+        bmp->Width = w;
+        bmp->Height = h;
 
-    Graphics::TBitmap* src = Image1->Picture->Bitmap;
-    int w = std::max(0, std::min(sx2, src->Width) - std::max(0, sx1));
-    int h = std::max(0, std::min(sy2, src->Height) - std::max(0, sy1));
-    if (w == 0 || h == 0)
-        return;
+        bmp->Canvas->CopyRect(
+            TRect(0, 0, w, h), src->Canvas, TRect(sx1, sy1, sx1 + w, sy1 + h));
 
-    Graphics::TBitmap* bmp = new Graphics::TBitmap();
-    bmp->PixelFormat = src->PixelFormat;
-    bmp->Width = w;
-    bmp->Height = h;
+        Image2->Picture->Bitmap = bmp;
+    }
 
-    bmp->Canvas->CopyRect(
-        TRect(0, 0, w, h), src->Canvas, TRect(sx1, sy1, sx1 + w, sy1 + h));
 
-	Image1->Picture->Bitmap = bmp;
-	*/
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::Image1MouseDown(
     TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
+    // PROFILUL UNEI LINII
     Graphics::TBitmap* source = new Graphics::TBitmap;
     Graphics::TBitmap* dstS = new Graphics::TBitmap;
     source->Assign(Image1->Picture->Bitmap);
@@ -228,7 +228,12 @@ void __fastcall TForm1::Image1MouseDown(
     }
     Chart1->Series[0]->Active = true;
     Chart1->Series[1]->Active = true;
-    Chart1->Series[2]->Active = true;
+	Chart1->Series[2]->Active = true;
+
+    // SELECTIE
+    pt[cnt].X = X;
+	pt[cnt].Y = Y;
+	cnt++;
 }
 //---------------------------------------------------------------------------
 
