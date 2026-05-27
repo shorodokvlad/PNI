@@ -1,0 +1,49 @@
+//---------------------------------------------------------------------------
+
+#ifndef Unit1H
+#define Unit1H
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <VCLTee.Chart.hpp>
+#include <VclTee.TeeGDIPlus.hpp>
+#include <VCLTee.TeEngine.hpp>
+#include <VCLTee.TeeProcs.hpp>
+#include <Vcl.Dialogs.hpp>
+#include <VCLTee.Series.hpp>
+//---------------------------------------------------------------------------
+class TForm1 : public TForm
+{
+__published:	// IDE-managed Components
+	TImage *Image1;
+	TChart *Chart1;
+	TButton *Button1;
+	TOpenDialog *OpenDialog1;
+	TLineSeries *Series1;
+	TLineSeries *Series2;
+	TLineSeries *Series3;
+	TEdit *Edit1;
+	TImage *Image2;
+	TCheckBox *CheckBox1;
+	TCheckBox *CheckBox2;
+	TCheckBox *CheckBox3;
+	TCheckBox *CheckBox4;
+	TButton *Button2;
+	TCheckBox *CheckBox5;
+	TCheckBox *CheckBox6;
+	TButton *Button3;
+	void __fastcall Button1Click(TObject *Sender);
+	void __fastcall Button2Click(TObject *Sender);
+	void __fastcall Image1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TForm1(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TForm1 *Form1;
+//---------------------------------------------------------------------------
+#endif
