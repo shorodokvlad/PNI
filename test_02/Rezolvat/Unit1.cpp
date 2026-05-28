@@ -229,6 +229,32 @@ void __fastcall TForm1::Button2Click(TObject* Sender)
 	   }
 	}
 
+    // MOZAIC
+    if (CheckBox5->Checked) {
+		int mozaicSize=8;
+		for(int y=0;y<source->Height;y++)
+		{
+			for(int x=0;x<source->Width;x++)
+			{
+				int newX=mozaicSize-x%mozaicSize;
+				int newY=mozaicSize-y%mozaicSize;
+
+				if(x+newX>0 && x+newX<source->Width && y+newY>0 && y+newY<source->Height)
+				{
+					TColor color=source->Canvas->Pixels[x+newX][y+newY];
+					int r=GetRValue(color);
+					int g=GetGValue(color);
+					int b=GetBValue(color);
+
+					dest->Canvas->Pixels[x][y]=TColor(RGB(r,g,b));
+				}  else{
+					dest->Canvas->Pixels[x][y]=clWhite;
+				}
+			}
+		}
+		Image2->Picture->Bitmap->Assign(dest);
+	}
+
 }
 //---------------------------------------------------------------------------
 
