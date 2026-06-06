@@ -84,6 +84,7 @@ void __fastcall TForm1::Button1Click(TObject* Sender)
 
 void __fastcall TForm1::Button7Click(TObject* Sender)
 {
+    // Cumulative histogram
 	Graphics::TBitmap* imgs = new Graphics::TBitmap;
     imgs->Assign(Image1->Picture->Bitmap);
     imgs->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
@@ -125,46 +126,12 @@ void __fastcall TForm1::Button7Click(TObject* Sender)
 
 void __fastcall TForm1::Button4Click(TObject* Sender)
 {
-	int oW = Image1->Picture->Width; ///dimensiuni imagini sursa
-	int oH = Image1->Picture->Height;
-	int sW = Image1->Width;
-	int sH = Image1->Height;
-	int ZX1, ZX2, ZY1, ZY2;
+    // selected area
+   int ZX1 = (int)pt[cnt - 2].x;
+	int ZX2 = (int)pt[cnt - 1].x;
+	int ZY1 = (int)pt[cnt - 2].y;
+    int ZY2 = (int)pt[cnt - 1].y;
 	///actualizare a noilor dimensiuni ale imaginii incarcata in image1
-	double ratioComponent = (double)oW / (double)oH;
-	int newW, newH;
-	if (ratioComponent > 1) {
-		newW = sW;
-		newH = newW / ratioComponent;
-		if (newH > sH) {
-			newH = sH;
-			newW = newH * ratioComponent;
-		}
-	} else {
-		newH = sH;
-		newW = newH * ratioComponent;
-		if (newW > oW) {
-			newW = oW;
-			newH = newW / ratioComponent;
-		}
-	}
-	double scaleX = 1.0 * oW / newW;
-	double scaleY = 1.0 * oH / newH;
-
-	if (oW > sW) {
-		ZX1 = (int)1.0 * pt[cnt - 2].x * scaleX;
-		ZX2 = (int)1.0 * pt[cnt - 1].x * scaleX;
-	} else {
-		ZX1 = (int)pt[cnt - 2].x;
-		ZX2 = (int)pt[cnt - 1].x;
-	}
-	if (oH > sH) {
-		ZY1 = (int)1.0 * pt[cnt - 2].y * scaleY;
-		ZY2 = (int)1.0 * pt[cnt - 1].y * scaleY;
-	} else {
-		ZY1 = (int)pt[cnt - 2].y;
-		ZY2 = (int)pt[cnt - 1].y;
-	}
 	Graphics::TBitmap* imgs = new Graphics::TBitmap;
 	imgs->Assign(Image1->Picture->Bitmap); ///org
 	imgs->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
@@ -186,66 +153,9 @@ void __fastcall TForm1::Button4Click(TObject* Sender)
 			}
 		}
 	}
-	TRect ZoomRect =
-		Rect(pt[cnt - 2].x, pt[cnt - 2].y, pt[cnt - 1].x, pt[cnt - 1].y);
-	Graphics::TBitmap* ZoomBitmap = new Graphics::TBitmap;
-	ZoomBitmap->Width = (pt[cnt - 1].x - pt[cnt - 2].x);
-	ZoomBitmap->Height = (pt[cnt - 1].y - pt[cnt - 2].y);
-	ZoomBitmap->PixelFormat = Image2->Picture->Bitmap->PixelFormat;
-	ZoomBitmap->Canvas->StretchDraw(
-		TRect(0, 0, ZoomBitmap->Width, ZoomBitmap->Height), imgd);
-
-	Image3->Picture->Bitmap = ZoomBitmap;
+	Image3->Picture->Bitmap->Assign(imgd);
 	delete imgd;
-	delete imgs;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TForm1::Button2Click(TObject* Sender)
-{
-	Graphics::TBitmap* imgs = new Graphics::TBitmap;
-	if (CheckBox1->Checked) {
-		imgs->Assign(Image3->Picture->Bitmap);
-		imgs->PixelFormat = Image3->Picture->Bitmap->PixelFormat;
-	} else {
-		imgs->Assign(Image1->Picture->Bitmap);
-		imgs->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
-    }
-
-    Graphics::TBitmap* imgd = new Graphics::TBitmap;
-    imgd->Width = imgs->Width;
-    imgd->Height = imgs->Height;
-    imgd->PixelFormat = imgs->PixelFormat;
-    double w[3][3] = { { 1.0 / 8, 1.0 / 8, 1.0 / 8 }, { 1.0 / 8, 0, 1.0 / 8 },
-        { 1.0 / 8, 1.0 / 8, 1.0 / 8 } };
-    int dim = 3, d = dim / 2;
-    for (int y = 0; y < imgd->Height; y++) {
-        RGBTRIPLE* psS = (RGBTRIPLE*)imgd->ScanLine[y];
-        for (int x = 0; x < imgd->Width; x++) {
-            double vR = 0, vG = 0, vB = 0;
-            for (int i = (-1) * d; i <= d; i++) {
-                int newi = i;
-                if (y + i < 0 || y + i >= imgs->Height)
-                    newi = 0;
-                RGBTRIPLE* ps = (RGBTRIPLE*)imgs->ScanLine[y + newi];
-                for (int j = (-1) * d; j <= d; j++) {
-                    int newj = j;
-                    if (x + j < 0 || x + j >= imgs->Width)
-                        newj = 0;
-                    vR += w[newi + d][newj + d] * ps[x + newj].rgbtRed;
-                    vG += w[newi + d][newj + d] * ps[x + newj].rgbtGreen;
-                    vB += w[newi + d][newj + d] * ps[x + newj].rgbtBlue;
-                }
-            }
-            psS[x].rgbtRed = std::max(0, std::min(255, (int)vR));
-            psS[x].rgbtGreen = std::max(0, std::min(255, (int)vG));
-            psS[x].rgbtBlue = std::max(0, std::min(255, (int)vB));
-        }
-    }
-    Image2->Picture->Bitmap->Assign(imgd);
-    delete imgs;
-    delete imgd;
-}
+	delete imgs;}
 
 void __fastcall TForm1::Image1MouseDown(
     TObject* Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
@@ -314,7 +224,8 @@ void __fastcall TForm1::Button6Click(TObject* Sender)
 
 void __fastcall TForm1::Button3Click(TObject* Sender)
 {
-    Graphics::TBitmap* imgs = new Graphics::TBitmap;
+    // Edge Detection
+	Graphics::TBitmap* imgs = new Graphics::TBitmap;
     if (CheckBox1->Checked) {
         imgs->Assign(Image3->Picture->Bitmap);
         imgs->PixelFormat = Image3->Picture->Bitmap->PixelFormat;
@@ -364,6 +275,7 @@ void __fastcall TForm1::Button3Click(TObject* Sender)
 
 void __fastcall TForm1::Button8Click(TObject* Sender)
 {
+    // Posterization
 	Graphics::TBitmap* imgs = new Graphics::TBitmap;
     if (CheckBox1->Checked) {
         imgs->Assign(Image3->Picture->Bitmap);
@@ -408,7 +320,8 @@ void __fastcall TForm1::Button8Click(TObject* Sender)
 
 void __fastcall TForm1::Button5Click(TObject* Sender)
 {
-    Label4->Caption = "Info:\n";
+    // info
+	Label4->Caption = "Info:\n";
     Graphics::TBitmap* imgs = new Graphics::TBitmap;
     imgs->Assign(Image1->Picture->Bitmap);
     imgs->PixelFormat = imgs->PixelFormat;
@@ -454,7 +367,7 @@ void __fastcall TForm1::Button5Click(TObject* Sender)
 
 void __fastcall TForm1::Button9Click(TObject *Sender)
 {
-
+   // Simple select
 	Graphics::TBitmap* imgs = new Graphics::TBitmap;
 	imgs->Assign(Image1->Picture->Bitmap); ///org
 	imgs->PixelFormat = Image1->Picture->Bitmap->PixelFormat;
@@ -509,3 +422,8 @@ void __fastcall TForm1::Button9Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TForm1::Button2Click(TObject *Sender)
+{
+    // Mean Filtering
+}
+//---------------------------------------------------------------------------
