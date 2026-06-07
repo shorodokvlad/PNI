@@ -1,0 +1,164 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Model Subiect'
+  ClientHeight = 670
+  ClientWidth = 1155
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  TextHeight = 15
+  object Image1: TImage
+    Left = 188
+    Top = 34
+    Width = 341
+    Height = 296
+  end
+  object Image2: TImage
+    Left = 535
+    Top = 34
+    Width = 341
+    Height = 296
+    OnMouseDown = Image2MouseDown
+  end
+  object Image4: TImage
+    Left = 535
+    Top = 343
+    Width = 341
+    Height = 296
+  end
+  object Label4: TLabel
+    Left = 912
+    Top = 30
+    Width = 21
+    Height = 15
+    Caption = 'Info'
+  end
+  object Chart1: TChart
+    Left = 8
+    Top = 343
+    Width = 521
+    Height = 313
+    Legend.Visible = False
+    Title.Text.Strings = (
+      'Histograma')
+    View3D = False
+    TabOrder = 0
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object Series1: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Red'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series2: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Green'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+    object Series3: TLineSeries
+      HoverElement = [heCurrent]
+      Title = 'Blue'
+      Brush.BackColor = clDefault
+      Pointer.InflateMargins = True
+      Pointer.Style = psRectangle
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+    end
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 57
+    Width = 169
+    Height = 25
+    Caption = 'Load'
+    TabOrder = 1
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 8
+    Top = 238
+    Width = 169
+    Height = 25
+    Caption = 'Mean Filtering'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 8
+    Top = 269
+    Width = 169
+    Height = 25
+    Caption = 'Edge Detection'
+    TabOrder = 3
+    OnClick = Button3Click
+  end
+  object Button4: TButton
+    Left = 8
+    Top = 125
+    Width = 169
+    Height = 25
+    Caption = 'Selected Area'
+    TabOrder = 4
+    OnClick = Button4Click
+  end
+  object CheckBox1: TCheckBox
+    Left = 25
+    Top = 102
+    Width = 169
+    Height = 17
+    Caption = 'Muchii zona selectata'
+    TabOrder = 5
+  end
+  object Button6: TButton
+    Left = 8
+    Top = 26
+    Width = 167
+    Height = 25
+    Caption = 'Save'
+    TabOrder = 6
+  end
+  object Button5: TButton
+    Left = 8
+    Top = 156
+    Width = 167
+    Height = 25
+    Caption = 'Print Info'
+    TabOrder = 7
+  end
+  object Button7: TButton
+    Left = 8
+    Top = 207
+    Width = 167
+    Height = 25
+    Caption = 'Cumulative histogram'
+    TabOrder = 8
+  end
+  object Button8: TButton
+    Left = 8
+    Top = 300
+    Width = 167
+    Height = 25
+    Caption = 'Posterization'
+    TabOrder = 9
+  end
+  object OpenDialog1: TOpenDialog
+  end
+end
